@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>websocket demo</title>
+        <body>
+            <button onclick="openUsb()">打开usb</button>
+            <button onclick="readDll()">读取dll版本</button>
+            <button onclick="sound()">发声</button>
+            <button onclick="writeCard()">写入卡片</button>
+            <button onclick="readCard()">读取卡片</button>
+            <button onclick="clearCard()">清空卡</button>
+            <button onclick="readCardType()">读取卡片类型</button>
+            <button onclick="cardLock()">卡片锁号</button>
+            <button onclick="readCardTime()">读取卡片时间</button>
+        </body>
+
+        <script>
+            var ws = new WebSocket('ws:127.0.0.1:8989/websocket');
+            ws.onopen = function(evt){
+                ws.send('{}');
+                console.log("on open");
+            }
+            ws.onclose = function(evt){
+                console.log("on close");
+            }
+            ws.onmessage = function(evt){
+                console.log(evt.data);
+            }
+            function sendSocket(msg){
+                ws.send(JSON.stringify(msg))
+            }
+            function openUsb()
+            {
+                msg = {
+                    "action":"openUsb"
+                }
+                sendSocket(msg)
+            }
+            function readDll()
+            {
+                msg = {
+                    "action":"readDll"
+                }
+                sendSocket(msg)
+            }
+            function sound()
+            {
+                msg ={
+                    "action":"sound",
+                    "timeer":100
+                }
+                sendSocket(msg)
+            }
+            function writeCard()
+            {
+                msg = {
+                    "action":"writeCard",
+                    "dai":'0',
+                    "llock":'0',
+                    "cardNo":'21904820',
+                    "pdoors":'0',
+                    "bdate" : "2307121400", //开始时间
+                    "edate" : "2307131400", //结束时间
+                    "lockNo":  "01010230", //锁号
+                }
+                sendSocket(msg)
+            }
+            function readCard()
+            {
+                msg = {
+                    "action":"readCard",
+                }
+                sendSocket(msg)
+            }
+
+            function clearCard(){
+                msg = {
+                    "action":"clearCard",
+                }
+                sendSocket(msg)
+            }
+
+            function readCardType(){
+                msg = {
+                    "action":"readCardType",
+                }
+                sendSocket(msg)
+            }
+
+            function readCardTime(){
+                msg = {
+                    "action" :"readCardTime",
+                }
+                sendSocket(msg)
+            }
+            function cardLock()
+            {
+                msg = {
+                    "action" : "cardLock",
+                }
+                sendSocket(msg)
+            }
+    
+        </script>
+    </head>
+    <body>
+    </body
+</html>

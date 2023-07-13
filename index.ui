@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="6,2,2">
+     <item>
+      <widget class="QLineEdit" name="ip"/>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="port"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="startService">
+       <property name="text">
+        <string>开始</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
