@@ -9,6 +9,6 @@ setup(
     name="cardPro",
     version="1.0",
     description="pornHub发卡器接口",
-    executables=[Executable("main.py", base="Win32GUI")]
+    executables=[Executable("main.py", base="Win32GUI",icon='Icon.ico')]
 
 )

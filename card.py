@@ -1,13 +1,13 @@
 import ctypes
 import os
 import configparser
-lib = ctypes.WinDLL('proRFL.dll')
 class Card():
     cardBuffer = ''
     cf = configparser.ConfigParser()
     cf.read('./config.ini', encoding='utf-8')
     hotelId = int(cf.get("Sections","hotelId"))
     d12 = cf.get("Sections","d12")
+    lib = ctypes.WinDLL('proRFL.dll')
     lockNo = ''
     buf =''
     def strat(self):
@@ -22,18 +22,18 @@ class Card():
         #self.writeCard()
         #self.clearCard()
     def openUsb(self):
-        result = lib.initializeUSB(str(self.d12))
+        result = self.lib.initializeUSB(str(self.d12))
         return {'status':result}
     def readDll(self):
         # 调用函数
         buffer_size = 256
         buffer = (ctypes.c_char * buffer_size)()
-        result = lib.GetDLLVersion(buffer)    
+        result = self.lib.GetDLLVersion(buffer)    
         # 检查调用结果
         version = buffer.value.decode("utf-8")
         return {'status':result,'version':version}   
     def sound(self,timeer):
-        result = lib.Buzzer(self.d12,timeer)
+        result = self.lib.Buzzer(self.d12,timeer)
         return {'status':result}
     def writeCard(self,dai,llock,cardNo,pdoors,bdate,edate,lockNo):
         dai = dai.encode()
@@ -43,13 +43,13 @@ class Card():
         bdate = bdate.encode()
         edate = edate.encode()
         lockNo = lockNo.encode()
-        result = lib.GuestCard(self.d12,self.hotelId,cardNo,dai,llock,pdoors,bdate,edate,lockNo,self.cardBuffer)    
+        result = self.lib.GuestCard(self.d12,self.hotelId,cardNo,dai,llock,pdoors,bdate,edate,lockNo,self.cardBuffer)    
         return {'status':result}
                    
     def readCard(self):
         buffer_size = 255
         buffer = (ctypes.c_char * buffer_size)()
-        result = lib.ReadCard(self.d12,buffer)   
+        result = self.lib.ReadCard(self.d12,buffer)   
         card = '' 
         if result ==0:
             self.cardBuffer = buffer
@@ -58,13 +58,13 @@ class Card():
         return {'status':result,'cardBuffer':card}    
     #注销卡片        
     def clearCard(self):
-        result = lib.CardErase(self.d12,self.hotelId,self.getBuf())
+        result = self.lib.CardErase(self.d12,self.hotelId,self.getBuf())
         if result ==0:
             print('clear ok')
     def readCardType(self):
         buffer_size = 1
         CardType = (ctypes.c_ubyte * buffer_size)()
-        result = lib.GetCardTypeByCardDataStr(self.getBuf(),CardType)
+        result = self.lib.GetCardTypeByCardDataStr(self.getBuf(),CardType)
         cardType = ''    
         if result == 0:
             for i in CardType:
@@ -75,7 +75,7 @@ class Card():
     def getBuf(self):
         buffer_size = 255
         buffer = (ctypes.c_char * buffer_size)()
-        result = lib.ReadCard(self.d12,buffer) 
+        result = self.lib.ReadCard(self.d12,buffer) 
         print('result:wei',result)  
         if result == 0:
             buf = buffer
@@ -83,7 +83,7 @@ class Card():
         return buffer
     def cardLock(self):
         lock = (ctypes.c_ubyte * 8)()
-        result = lib.GetGuestLockNoByCardDataStr(self.hotelId,self.getBuf(), lock)  
+        result = self.lib.GetGuestLockNoByCardDataStr(self.hotelId,self.getBuf(), lock)  
         if result == 0:
             for i in lock:
                 self.lockNo += str(chr(i))        
@@ -91,7 +91,7 @@ class Card():
         return {'status':result,'lockNo':self.lockNo}    
     def readCardTime(self):
         cTime = (ctypes.c_byte *10)()
-        result = lib.GetGuestETimeByCardDataStr(self.hotelId,self.getBuf(),cTime)
+        result = self.lib.GetGuestETimeByCardDataStr(self.hotelId,self.getBuf(),cTime)
         cardDate = ''
         if result ==0:
             for i in cTime:

@@ -5,10 +5,25 @@ from PySide2.QtCore import QCoreApplication,Slot
 import multiprocessing as mp
 from web_socket import SocketThread
 import configparser
+
 import json
 import asyncio
 from ui_index import Ui_Form
 from card import Card
+# 检查是否已经存在另一个实例
+def check_existing_instance(shared_value):
+    print('实例id',shared_value.value)
+    if shared_value.value == 1:
+        # 显示错误消息框
+        error_box = QMessageBox()
+        error_box.setIcon(QMessageBox.Critical)
+        error_box.setWindowTitle("Error")
+        error_box.setText("Another instance is already running.")
+        error_box.exec_()
+        sys.exit(1)
+    else:
+        # 标记为已经存在实例
+        shared_value.value = 1
 class LoginGui(QWidget, Ui_Form):
     cf = configparser.ConfigParser()
     cf.read('./config.ini', encoding='utf-8')
@@ -16,27 +31,18 @@ class LoginGui(QWidget, Ui_Form):
     cf_port = cf.get("Sections","port")
     websocket =''
     socket_thread = ''
-    def __init__(self):
+    def __init__(self,shared_value):
+        
         super(LoginGui, self).__init__()   # 调用父类的初始化方法
-        # 检查是否已经有一个实例运行
-        app_id = "my_app_identifier"
-        # 创建共享内存
-        lock = mp.Lock()
-        is_running = False
-        # 尝试获取锁，如果获取成功，则说明没有运行的实例
-        if lock.acquire(block=False):
-           is_running = False
-        else:
-           is_running = True
-        if is_running ==True:
-            QMessageBox.critical(None, "Error", "发卡器已经运行.")
-            sys.exit()
         self.setupUi(self)                 #  调用Ui_MainWindow的setupUi方法布置界面
         _translate = QCoreApplication.translate
         self.ip.setText(_translate("Form", self.cf_ip))
         self.port.setText(_translate("Form", self.cf_port))
         #self.startService.clicked.connect(self.startServer)
         self.setWindowIcon(QIcon('Icon.ico'))
+        # 检查是否已经存在另一个实例
+        check_existing_instance(shared_value)
+
         self.startServer()
         #打开usb
         cardUsb = Card()
@@ -96,7 +102,8 @@ class LoginGui(QWidget, Ui_Form):
         
 if __name__ == '__main__':
     app = QApplication([])
-    # 创建一个 QIcon 对象，用于设置应用程序的图标
-    gui = LoginGui()
+     # 创建共享内存
+    shared_value = mp.Value('i', 0)
+    gui = LoginGui(shared_value)
     gui.show()
     app.exec_()
